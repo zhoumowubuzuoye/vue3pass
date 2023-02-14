@@ -8,18 +8,6 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
-    redirect: "/login",
-  },
-  {
-    path: "/index",
-    component: () => import("@/views/index.vue"),
-    name: "Index",
-    meta:{
-      title:'首页'
-    }
-  },
-  {
     path: "/login",
     name: "Login",
     meta: {

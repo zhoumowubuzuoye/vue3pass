@@ -1,14 +1,15 @@
 /*
  * @Author: xiewenhao
  * @Date: 2023-02-13 11:12:07
- * @LastEditTime: 2023-02-13 16:35:51
- * @Description: 
+ * @LastEditTime: 2023-02-14 14:53:03
+ * @Description:
  */
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import Components from "unplugin-vue-components/vite";
+import { VantResolver } from "unplugin-vue-components/resolvers";
 import path from "path";
 import AutoImport from "unplugin-auto-import/vite";
-import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 
 function resolve(dir) {
@@ -22,15 +23,16 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
     Components({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [VantResolver({ importStyle: false })],
+      dts: false,
     }),
   ],
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@use "./src/style/index.scss" as *;`
-      }
-    }
+        additionalData: `@use "./src/style/index.scss" as *;`,
+      },
+    },
   },
   resolve: {
     alias: {

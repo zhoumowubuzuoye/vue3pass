@@ -1,16 +1,14 @@
 <!--
  * @Author: xiewenhao
  * @Date: 2023-02-13 11:12:07
- * @LastEditTime: 2023-02-13 16:26:51
+ * @LastEditTime: 2023-02-14 11:14:03
  * @Description: 
 -->
 <script setup lang="ts">
-import { useUserStore } from "@/store/modules/name";
-const userStore = useUserStore();
 </script>
 
 <template>
-  <RouterView></RouterView>
+  <router-view></router-view>
 </template>
 
 <style scoped lang="scss">

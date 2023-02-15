@@ -1,7 +1,7 @@
 /*
  * @Author: xiewenhao
  * @Date: 2023-02-14 11:02:27
- * @LastEditTime: 2023-02-14 17:05:22
+ * @LastEditTime: 2023-02-15 09:53:30
  * @Description: 
  */
 import { useUserStore } from "@/store";
@@ -57,13 +57,13 @@ type Data<T> = {
 };
 const request = <T>(
   url: string,
-  method: Method = "GET",
+  method: Method = "get",
   submitData?: object
 ) => {
   return instance.request<T, Data<T>>({
     url,
     method,
-    [method.toUpperCase() === "get" ? "params" : "data"]: submitData,
+    [method.toLowerCase() === "get" ? "params" : "data"]: submitData,
   });
 };
 export { baseURL, instance ,request};

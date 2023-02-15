@@ -1,7 +1,7 @@
 <!--
  * @Author: xiewenhao
  * @Date: 2023-02-13 13:36:44
- * @LastEditTime: 2023-02-14 17:18:35
+ * @LastEditTime: 2023-02-15 14:17:58
  * @Description: 
 -->
 <template>
@@ -13,25 +13,47 @@
     <!-- 头部 -->
     <div class="login-head">
       <h3>{{ isPass ? "密码登录" : "短信验证码登录" }}</h3>
-      <a href="javascript:;">
+      <a href="javascript:;" @click="isPass = !isPass">
         <span>{{ !isPass ? "密码登录" : "短信验证码登录" }}</span>
         <van-icon name="arrow"></van-icon>
       </a>
     </div>
     <!-- 表单 -->
-    <van-form autocomplete="off" @submit="login">
+    <van-form autocomplete="off" @submit="login" ref="form">
       <van-field
         placeholder="请输入手机号"
         type="tel"
+        name="mobile"
         v-model="phone"
         :rules="moblieRules"
       ></van-field>
       <van-field
         placeholder="请输入密码"
-        type="password"
+        v-if="isPass"
+        :type="isShow ? 'password' : 'text'"
         v-model="password"
         :rules="passwordRules"
-      ></van-field>
+      >
+        <template #button>
+          <CpIcon
+            :name="`login-eye-${isShow ? 'off' : 'on'}`"
+            @click="isShow = !isShow"
+          ></CpIcon>
+        </template>
+      </van-field>
+      <van-field
+        v-if="!isPass"
+        v-model="code"
+        :rules="codeRules"
+        placeholder="短信验证码"
+        :maxlength="6"
+      >
+        <template #button
+          ><span class="btn-send" @click="send">{{
+            time > 0 ? `${time}后再次发送` : `发送验证码`
+          }}</span></template
+        >
+      </van-field>
       <div class="cp-cell">
         <van-checkbox v-model="agree">
           <span>我已同意</span>
@@ -59,32 +81,65 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue";
+import { onUnmounted, ref } from "vue";
 import CpNavBar from "@/components/CpNavBar.vue";
+import CpIcon from "@/components/CpIcon.vue";
 import { useUserStore } from "@/store";
-import { moblieRules, passwordRules } from "@/utils/rules";
-import { Toast } from "vant";
-import { loginByPassword } from "@/api";
+import { moblieRules, passwordRules, codeRules } from "@/utils/rules";
+import { Toast, type FormInstance } from "vant";
+import { loginByPassword, sendMobileCode, loginByMobile } from "@/api";
 import { useRoute, useRouter } from "vue-router";
+import { User } from "@/types/user";
+import { update } from "lodash";
 
 const route = useRoute();
 const router = useRouter();
 const store = useUserStore();
+const form = ref<FormInstance>();
 const agree = ref<boolean>(false);
 const isPass = ref(true);
-const phone = ref("");
-const password = ref("");
+const isShow = ref(true);
+const phone = ref("13230000001");
+const password = ref("abc12345");
+const code = ref("");
+const time = ref(0);
+let timeId: number;
 const rightClick = (value) => {
   console.log(value);
 };
+
 const login = async () => {
   if (!agree.value) return Toast("请勾选我同意");
-  loginByPassword(phone.value, password.value).then((res) => {
-    store.setUser(res.data);
-    router.push((route.query.returnUrl as string) || "/user");
-    Toast("登录成功");
+  const res = isPass.value
+    ? await loginByPassword(phone.value, password.value)
+    : await loginByMobile(phone.value, code.value);
+  updateLogin(res);
+};
+
+const updateLogin = (res: { data: User }) => {
+  store.setUser(res.data);
+  router.push((route.query.returnUrl as string) || "/user");
+  Toast("登录成功");
+};
+
+const send = () => {
+  if (time.value > 0) return;
+  form.value?.validate("mobile").then(() => {
+    sendMobileCode(phone.value, "login").then((res) => {
+      code.value = res.data?.code;
+      Toast("验证发送成功");
+      time.value = 60;
+      timeId = window.setInterval(() => {
+        time.value--;
+        if (time.value === 0) clearInterval(timeId);
+      }, 1000);
+    });
   });
 };
+
+onUnmounted(() => {
+  clearInterval(timeId);
+});
 </script>
 <style scoped lang="scss">
 .login {

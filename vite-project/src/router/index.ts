@@ -1,7 +1,7 @@
 /*
  * @Author: xiewenhao
  * @Date: 2023-02-13 13:33:21
- * @LastEditTime: 2023-02-13 16:30:29
+ * @LastEditTime: 2023-02-15 14:22:05
  * @Description: 
  */
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
@@ -14,6 +14,11 @@ const routes: Array<RouteRecordRaw> = [
       title: "登录",
     },
     component: () => import("@/views/login/index.vue"),
+  },
+  {
+    path: "/",
+    redirect:'/home',
+    
   },
 ];
 

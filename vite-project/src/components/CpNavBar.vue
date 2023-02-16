@@ -1,9 +1,15 @@
+<!--
+ * @Author: xiewenhao
+ * @Date: 2023-02-14 15:06:53
+ * @LastEditTime: 2023-02-16 16:57:23
+ * @Description: 
+-->
 <template>
   <van-nav-bar
     fixed
     :left-arrow="leftShow"
     title="登录"
-    right-text="注册"
+    :right-text="isshowRight ? '注册' : ''"
     @click-left="onClickLeft"
     @click-right="onClickRight"
   ></van-nav-bar>
@@ -21,6 +27,10 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "click-right", val: string): void;
 }>();
+
+const isshowRight = computed(() => {
+  return route.path === "/login";
+});
 const isshow = (path: string): boolean => {
   return route.path !== path;
 };

@@ -1,12 +1,17 @@
 /*
  * @Author: xiewenhao
  * @Date: 2023-02-13 13:33:21
- * @LastEditTime: 2023-02-16 13:51:48
+ * @LastEditTime: 2023-02-16 16:51:33
  * @Description:
  */
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-
-const routes: Array<RouteRecordRaw> = [
+import { useUserStore } from "@/store";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
+NProgress.configure({
+  showSpinner: false,
+});
+export const routes: Array<RouteRecordRaw> = [
   {
     path: "/login",
     name: "Login",
@@ -24,25 +29,40 @@ const routes: Array<RouteRecordRaw> = [
         path: "/home",
         component: () => import("@/views/Home/index.vue"),
         meta: {
+          title: "首页",
           icon: "index",
         },
       },
       {
         path: "/article",
         component: () => import("@/views/Article/index.vue"),
-        meta: {},
+        meta: {
+          title: "健康百科",
+          icon: "article",
+        },
       },
       {
         path: "/notify",
         component: () => import("@/views/Notify/index.vue"),
-        meta: {},
+        meta: {
+          title: "消息中心",
+          icon: "notice",
+        },
       },
       {
         path: "/user",
         component: () => import("@/views/User/index.vue"),
-        meta: {},
+        meta: {
+          title: "我的",
+          icon: "mine",
+        },
       },
     ],
+  },
+  {
+    path: "/user/patient",
+    component: () => import("@/views/User/PatientPage.vue"),
+    meta: { title: "家庭档案" },
   },
 ];
 
@@ -51,4 +71,15 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to) => {
+  NProgress.start();
+  const store = useUserStore();
+  const whiteList = ["/login"];
+  if (!store.user?.token && !whiteList.includes(to.path)) return "/login";
+});
+
+router.afterEach((to) => {
+  NProgress.done();
+  document.title = to.meta.title || "";
+});
 export default router;

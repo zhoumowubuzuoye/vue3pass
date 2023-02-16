@@ -1,8 +1,8 @@
 /*
  * @Author: xiewenhao
  * @Date: 2023-02-13 13:33:21
- * @LastEditTime: 2023-02-15 14:22:05
- * @Description: 
+ * @LastEditTime: 2023-02-16 13:51:48
+ * @Description:
  */
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
@@ -17,8 +17,32 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/",
-    redirect:'/home',
-    
+    redirect: "/home",
+    component: () => import("@/views/Layout/index.vue"),
+    children: [
+      {
+        path: "/home",
+        component: () => import("@/views/Home/index.vue"),
+        meta: {
+          icon: "index",
+        },
+      },
+      {
+        path: "/article",
+        component: () => import("@/views/Article/index.vue"),
+        meta: {},
+      },
+      {
+        path: "/notify",
+        component: () => import("@/views/Notify/index.vue"),
+        meta: {},
+      },
+      {
+        path: "/user",
+        component: () => import("@/views/User/index.vue"),
+        meta: {},
+      },
+    ],
   },
 ];
 

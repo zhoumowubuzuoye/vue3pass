@@ -1,14 +1,14 @@
 <!--
  * @Author: xiewenhao
  * @Date: 2023-02-14 15:06:53
- * @LastEditTime: 2023-02-16 16:57:23
+ * @LastEditTime: 2023-02-17 10:54:05
  * @Description: 
 -->
 <template>
   <van-nav-bar
     fixed
     :left-arrow="leftShow"
-    title="登录"
+    :title="title"
     :right-text="isshowRight ? '注册' : ''"
     @click-left="onClickLeft"
     @click-right="onClickRight"
@@ -23,6 +23,7 @@ const route = useRoute();
 const props = defineProps<{
   title?: string;
   rightText?: string;
+  
 }>();
 const emit = defineEmits<{
   (e: "click-right", val: string): void;

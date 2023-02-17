@@ -1,6 +1,6 @@
 <template>
   <div class="patient-page">
-    <cp-nav-bar title="家庭档案"></cp-nav-bar>
+    <cp-nav-bar :title="'家庭档案'"></cp-nav-bar>
     <div class="patient-list">
       <div class="patient-item" v-for="item in list" :key="item.id">
         <div class="info">
@@ -12,30 +12,36 @@
         <div class="icon"><cp-icon name="user-edit" /></div>
         <div class="tag" v-if="item.defaultFlag">默认</div>
       </div>
-      <div class="patient-add" v-if="list.length <= 6">
+      <div class="patient-add" v-if="list.length <= 6" @click="showPopup">
         <cp-icon name="user-add" />
         <p>添加患者</p>
       </div>
       <div class="patient-tip">最多可添加 6 人</div>
     </div>
+    <van-popup v-model:show="show" position="right">
+      <cp-nav-bar title="添加患者" right-text="保存"></cp-nav-bar>
+    </van-popup>
   </div>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import CpNavBar from "@/components/CpNavBar.vue";
 import CpIcon from "@/components/CpIcon.vue";
+import CpRadioBtn from "@/components/CpRadioBtn.vue";
 import { getPatientList } from "@/api";
 import type { PatientList } from "@/types/user";
 import { Sex } from "@/utils/tools";
 
-const list = ref<PatientList>();
-
+const list = ref<PatientList>([]);
+const show = ref(false);
 const getList = () => {
   getPatientList().then((res) => {
     list.value = res.data;
   });
 };
-
+const showPopup = () => {
+  show.value = true;
+};
 onMounted(() => {
   getList();
 });
@@ -121,5 +127,14 @@ onMounted(() => {
 }
 .pb4 {
   padding-bottom: 4px;
+}
+.patient-page {
+  padding: 46px 0 80px;
+  :deep() {
+    .van-popup {
+      width: 80%;
+      height: 100%;
+    }
+  }
 }
 </style>

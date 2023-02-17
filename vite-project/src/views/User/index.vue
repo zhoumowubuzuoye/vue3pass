@@ -85,7 +85,6 @@ import { getUserInfo } from "@/api";
 import { useUserStore } from "@/store";
 import { useRouter } from "vue-router";
 import { Dialog } from "vant";
-import {} from '@/utils/tools'
 import CpIcon from "@/components/CpIcon.vue";
 const user = ref<UserInfo>();
 onMounted(async () => {

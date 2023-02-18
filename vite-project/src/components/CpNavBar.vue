@@ -9,43 +9,40 @@
     fixed
     :left-arrow="leftShow"
     :title="title"
-    :right-text="isshowRight ? '注册' : ''"
+    :right-text="rightText"
     @click-left="onClickLeft"
     @click-right="onClickRight"
   ></van-nav-bar>
 </template>
 <script lang="ts" setup>
-import { useRouter, useRoute } from "vue-router";
-import { ref, computed } from "vue";
+import { useRouter, useRoute } from 'vue-router'
+import { ref, computed } from 'vue'
 
-const router = useRouter();
-const route = useRoute();
+const router = useRouter()
+const route = useRoute()
 const props = defineProps<{
-  title?: string;
-  rightText?: string;
-  
-}>();
+  title?: string
+  rightText?: string
+  back?: Function
+}>()
 const emit = defineEmits<{
-  (e: "click-right", val: string): void;
-}>();
+  (e: 'click-right', val: string): void
+}>()
 
-const isshowRight = computed(() => {
-  return route.path === "/login";
-});
 const isshow = (path: string): boolean => {
-  return route.path !== path;
-};
+  return route.path !== path
+}
 const leftShow = computed(() => {
-  return isshow("/login");
-});
+  return isshow('/login')
+})
 const onClickLeft = () => {
   // TODO 点击左侧返回按钮
-  router.back();
-};
+  router.back()
+}
 const onClickRight = () => {
-  emit("click-right", "点击");
+  emit('click-right', '点击')
   // TODO 点击右侧文字按钮
-};
+}
 </script>
 <style scoped lang="scss">
 :deep() {

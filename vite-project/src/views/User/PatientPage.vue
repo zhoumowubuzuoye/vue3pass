@@ -18,33 +18,38 @@
       </div>
       <div class="patient-tip">最多可添加 6 人</div>
     </div>
-    <van-popup v-model:show="show" position="right">
-      <cp-nav-bar title="添加患者" right-text="保存"></cp-nav-bar>
-    </van-popup>
+    <AddForm :popupShow="show" :back="back" @updateShow="updateShow"></AddForm>
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
-import CpNavBar from "@/components/CpNavBar.vue";
-import CpIcon from "@/components/CpIcon.vue";
-import CpRadioBtn from "@/components/CpRadioBtn.vue";
-import { getPatientList } from "@/api";
-import type { PatientList } from "@/types/user";
-import { Sex } from "@/utils/tools";
+import { onMounted, ref } from 'vue'
+import CpNavBar from '@/components/CpNavBar.vue'
+import CpIcon from '@/components/CpIcon.vue'
+import AddForm from './components/addForm.vue'
+import { getPatientList } from '@/api'
+import type { PatientList } from '@/types/user'
+import { Sex } from '@/utils/tools'
+import { update } from 'lodash'
 
-const list = ref<PatientList>([]);
-const show = ref(false);
+const list = ref<PatientList>([])
+const show = ref(false)
 const getList = () => {
-  getPatientList().then((res) => {
-    list.value = res.data;
-  });
-};
+  getPatientList().then(res => {
+    list.value = res.data
+  })
+}
 const showPopup = () => {
-  show.value = true;
-};
+  show.value = true
+}
+const back = () => {
+  show.value = false
+}
+const updateShow = (value) =>{
+  show.value = value
+}
 onMounted(() => {
-  getList();
-});
+  getList()
+})
 </script>
 <style scoped lang="scss">
 .patient-page {

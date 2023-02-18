@@ -37,6 +37,9 @@ const leftShow = computed(() => {
 })
 const onClickLeft = () => {
   // TODO 点击左侧返回按钮
+  if(props.back){
+    return props.back()
+  }
   router.back()
 }
 const onClickRight = () => {

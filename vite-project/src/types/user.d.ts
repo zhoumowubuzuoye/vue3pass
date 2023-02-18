@@ -17,7 +17,7 @@ type Person = {
   /** 姓名 */
   name: string;
   /** 年纪 */
-  age: number;
+  age?: number;
 };
 type OmitUser = Omit<User, "token">;
 
@@ -44,7 +44,7 @@ export type UserInfo = OmitUser & {
 
 export type Patient = Person & {
   /** 患者ID */
-  id: string;
+  id?: string;
   /** 患者名称 */
   idCard: string;
   /** 0不默认  1默认 */
@@ -52,7 +52,7 @@ export type Patient = Person & {
   /** 0 女  1 男 */
   gender: 0 | 1;
   /** 性别文字 */
-  genderValue: string;
+  genderValue?: string;
 };
 
 export type PatientList = Patient[];

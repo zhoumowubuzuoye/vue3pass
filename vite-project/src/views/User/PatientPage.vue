@@ -9,7 +9,9 @@
           <span>{{ Sex(item.gender) }}</span>
           <span>{{ item.age }}岁</span>
         </div>
-        <div class="icon"><cp-icon name="user-edit" /></div>
+        <div class="icon" @click="showPopup(item)">
+          <cp-icon name="user-edit" />
+        </div>
         <div class="tag" v-if="item.defaultFlag">默认</div>
       </div>
       <div class="patient-add" v-if="list.length <= 6" @click="showPopup">
@@ -18,7 +20,14 @@
       </div>
       <div class="patient-tip">最多可添加 6 人</div>
     </div>
-    <AddForm :popupShow="show" :back="back" @updateShow="updateShow"></AddForm>
+    <AddForm
+      :popupShow="show"
+      :back="back"
+      @updateShow="updateShow"
+      @submit="submit"
+      :itemValue="itemValue"
+      ref="form"
+    ></AddForm>
   </div>
 </template>
 <script lang="ts" setup>
@@ -26,26 +35,58 @@ import { onMounted, ref } from 'vue'
 import CpNavBar from '@/components/CpNavBar.vue'
 import CpIcon from '@/components/CpIcon.vue'
 import AddForm from './components/addForm.vue'
-import { getPatientList } from '@/api'
-import type { PatientList } from '@/types/user'
+import { getPatientList, addPatient, delPatient } from '@/api'
+import type { PatientList, Patient } from '@/types/user'
 import { Sex } from '@/utils/tools'
-import { update } from 'lodash'
+import { Toast, Dialog } from 'vant'
 
 const list = ref<PatientList>([])
 const show = ref(false)
+const form = ref()
 const getList = () => {
   getPatientList().then(res => {
     list.value = res.data
   })
 }
-const showPopup = () => {
+const showPopup = item => {
+  console.log(item);
+  
+  if (item) itemValue.value = item
   show.value = true
 }
 const back = () => {
   show.value = false
 }
-const updateShow = (value) =>{
+const updateShow = value => {
   show.value = value
+}
+const itemValue = ref<Patient>()
+const edit = id => {
+  console.log(id)
+}
+const submit = (patient, callback) => {
+  addPatient(patient).then(res => {
+    getList()
+    Toast('新增成功')
+    show.value = false
+    callback()
+  })
+}
+
+const del = (id: string) => {
+  Dialog.confirm({
+    title: '删除患者',
+    message: '您确定是否删除该患者',
+  })
+    .then(() => {
+      delPatient(id).then(res => {
+        getList()
+        Toast('删除成功')
+      })
+    })
+    .catch(() => {
+      // on cancel
+    })
 }
 onMounted(() => {
   getList()

@@ -1,26 +1,41 @@
 <script setup lang="ts">
-import { reactive, computed } from 'vue'
+import { reactive, computed, ref, watch } from 'vue'
 
 import { Patient, PatientList } from '@/types/user'
+import { nameRules, idCardRules } from '@/utils/rules'
 
 import CpNavBar from '@/components/CpNavBar.vue'
 import CpRadioBtn from '@/components/CpRadioBtn.vue'
-
-const patientFrom = reactive<Patient>({
+import { FormInstance } from 'vant'
+const initPatient = reactive<Patient>({
   name: '',
   idCard: '',
   gender: 0,
   defaultFlag: 0,
 })
 
+const patientFrom = ref<Patient>({ ...initPatient })
+
 const props = defineProps<{
   popupShow: boolean
   back: Function
+  itemValue?: Patient
 }>()
 const emit = defineEmits<{
   (updateShow, value: boolean): void
+  (submit, value: Patient, callback: Function): void
 }>()
-
+watch(
+  ()=>props.itemValue,
+  (newValue, oldValue) => {
+    patientFrom.value = newValue
+  },
+  { deep: true }
+)
+const form = ref<FormInstance>()
+const reset = () => {
+  patientFrom.value = { ...initPatient }
+}
 const options = [
   {
     value: 0,
@@ -36,16 +51,21 @@ const emitValue = event => {
 }
 const defaultFlagValue = computed({
   get() {
-    if (patientFrom.defaultFlag === 0) {
+    if (patientFrom.value.defaultFlag === 0) {
       return false
     } else {
       return true
     }
   },
   set(value) {
-    patientFrom.defaultFlag = value ? 1 : 0
+    patientFrom.value.defaultFlag = value ? 1 : 0
   },
 })
+const submit = () => {
+  form.value?.validate().then(() => {
+    emit('submit', patientFrom.value, () => reset())
+  })
+}
 </script>
 <template>
   <van-popup
@@ -53,17 +73,24 @@ const defaultFlagValue = computed({
     @update:show="emitValue($event)"
     position="right"
   >
-    <cp-nav-bar title="添加患者" right-text="保存" :back="back"></cp-nav-bar>
+    <cp-nav-bar
+      title="添加患者"
+      right-text="保存"
+      :back="back"
+      @click-right="submit"
+    ></cp-nav-bar>
     <van-form autocomplete="off" ref="form">
       <van-field
         label="真实姓名"
         placeholder="请输入真实姓名"
         v-model="patientFrom.name"
+        :rules="nameRules"
       />
       <van-field
         label="身份证号"
         placeholder="请输入身份证号"
         v-model="patientFrom.idCard"
+        :rules="idCardRules"
       />
       <van-field label="性别" class="pb4">
         <!-- 单选按钮组件 -->

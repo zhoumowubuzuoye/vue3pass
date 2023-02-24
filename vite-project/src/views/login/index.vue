@@ -1,7 +1,7 @@
 <!--
  * @Author: xiewenhao
  * @Date: 2023-02-13 13:36:44
- * @LastEditTime: 2023-02-15 14:17:58
+ * @LastEditTime: 2023-02-23 15:19:15
  * @Description: 
 -->
 <template>
@@ -99,7 +99,7 @@ const form = ref<FormInstance>();
 const agree = ref<boolean>(false);
 const isPass = ref(true);
 const isShow = ref(true);
-const phone = ref("13230000001");
+const phone = ref("13230000100");
 const password = ref("abc12345");
 const code = ref("");
 const time = ref(0);

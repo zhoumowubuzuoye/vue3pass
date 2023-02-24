@@ -1,71 +1,79 @@
 <script setup lang="ts">
-import { reactive, computed, ref, watch } from 'vue'
+import { reactive, computed, ref, watch } from "vue";
 
-import { Patient, PatientList } from '@/types/user'
-import { nameRules, idCardRules } from '@/utils/rules'
+import { Patient, PatientList } from "@/types/user";
+import { nameRules, idCardRules } from "@/utils/rules";
 
-import CpNavBar from '@/components/CpNavBar.vue'
-import CpRadioBtn from '@/components/CpRadioBtn.vue'
-import { FormInstance } from 'vant'
+import CpNavBar from "@/components/CpNavBar.vue";
+import CpRadioBtn from "@/components/CpRadioBtn.vue";
+import { FormInstance } from "vant";
+import { log } from "console";
 const initPatient = reactive<Patient>({
-  name: '',
-  idCard: '',
+  name: "",
+  idCard: "",
   gender: 0,
   defaultFlag: 0,
-})
-
-const patientFrom = ref<Patient>({ ...initPatient })
+});
+const patientFrom = ref<Patient>();
 
 const props = defineProps<{
-  popupShow: boolean
-  back: Function
-  itemValue?: Patient
-}>()
+  popupShow: boolean;
+  back: Function;
+  itemValue?: Patient;
+}>();
 const emit = defineEmits<{
-  (updateShow, value: boolean): void
-  (submit, value: Patient, callback: Function): void
-}>()
+  (updateShow, value: boolean): void;
+  (submit, value: Patient, callback: Function): void;
+  (del, id: string): void;
+}>();
 watch(
-  ()=>props.itemValue,
+  () => props.itemValue,
   (newValue, oldValue) => {
-    patientFrom.value = newValue
+    if (newValue.id) {
+      patientFrom.value = newValue;
+    } else {
+      patientFrom.value = { ...initPatient };
+    }
   },
   { deep: true }
-)
-const form = ref<FormInstance>()
+);
+const form = ref<FormInstance>();
 const reset = () => {
-  patientFrom.value = { ...initPatient }
-}
+  patientFrom.value = { ...initPatient };
+};
 const options = [
   {
     value: 0,
-    label: '男',
+    label: "男",
   },
   {
     value: 1,
-    label: '女',
+    label: "女",
   },
-]
-const emitValue = event => {
-  emit('updateShow', event)
-}
+];
+const emitValue = (event) => {
+  emit("updateShow", event);
+};
 const defaultFlagValue = computed({
   get() {
     if (patientFrom.value.defaultFlag === 0) {
-      return false
+      return false;
     } else {
-      return true
+      return true;
     }
   },
   set(value) {
-    patientFrom.value.defaultFlag = value ? 1 : 0
+    patientFrom.value.defaultFlag = value ? 1 : 0;
   },
-})
+});
 const submit = () => {
   form.value?.validate().then(() => {
-    emit('submit', patientFrom.value, () => reset())
-  })
-}
+    emit("submit", patientFrom.value, () => reset());
+  });
+};
+const delPatient = (id) => {
+  emit("del", id);
+};
 </script>
 <template>
   <van-popup
@@ -74,7 +82,7 @@ const submit = () => {
     position="right"
   >
     <cp-nav-bar
-      title="添加患者"
+      :title="patientFrom.id ? '编辑患者' : '添加患者'"
       right-text="保存"
       :back="back"
       @click-right="submit"
@@ -107,11 +115,24 @@ const submit = () => {
         </template>
       </van-field>
     </van-form>
+    <van-action-bar v-if="patientFrom.id">
+      <van-action-bar-button @click="delPatient(patientFrom.id)"
+        >删除</van-action-bar-button
+      >
+    </van-action-bar>
   </van-popup>
 </template>
 
 <style lang="scss" scoped>
 .van-form {
   margin-top: 40px;
+}
+.van-action-bar {
+  padding: 0 10px;
+  margin-bottom: 10px;
+  .van-button {
+    color: var(--cp-price);
+    background-color: var(--cp-bg);
+  }
 }
 </style>

@@ -27,70 +27,82 @@
       @submit="submit"
       :itemValue="itemValue"
       ref="form"
+      @del="del"
     ></AddForm>
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
-import CpNavBar from '@/components/CpNavBar.vue'
-import CpIcon from '@/components/CpIcon.vue'
-import AddForm from './components/addForm.vue'
-import { getPatientList, addPatient, delPatient } from '@/api'
-import type { PatientList, Patient } from '@/types/user'
-import { Sex } from '@/utils/tools'
-import { Toast, Dialog } from 'vant'
+import { onMounted, ref } from "vue";
+import CpNavBar from "@/components/CpNavBar.vue";
+import CpIcon from "@/components/CpIcon.vue";
+import AddForm from "./components/addForm.vue";
+import { getPatientList, addPatient, delPatient, editPatient } from "@/api";
+import type { PatientList, Patient } from "@/types/user";
+import { Sex } from "@/utils/tools";
+import { Toast, Dialog } from "vant";
 
-const list = ref<PatientList>([])
-const show = ref(false)
-const form = ref()
+const list = ref<PatientList>([]);
+const show = ref(false);
+const form = ref();
 const getList = () => {
-  getPatientList().then(res => {
-    list.value = res.data
-  })
-}
-const showPopup = item => {
+  getPatientList().then((res) => {
+    list.value = res.data;
+  });
+};
+const showPopup = (item) => {
   console.log(item);
-  
-  if (item) itemValue.value = item
-  show.value = true
-}
+
+  if (item) itemValue.value = item;
+  show.value = true;
+};
 const back = () => {
-  show.value = false
-}
-const updateShow = value => {
-  show.value = value
-}
-const itemValue = ref<Patient>()
-const edit = id => {
-  console.log(id)
-}
-const submit = (patient, callback) => {
-  addPatient(patient).then(res => {
-    getList()
-    Toast('新增成功')
-    show.value = false
-    callback()
-  })
-}
+  show.value = false;
+};
+const updateShow = (value) => {
+  show.value = value;
+};
+const itemValue = ref<Patient>();
+const edit = (id) => {
+  console.log(id);
+};
+const submit = (patient: Patient, callback) => {
+  if (!patient.id) {
+    addPatient(patient).then((res) => {
+      getList();
+      Toast("新增成功");
+      show.value = false;
+      callback();
+    });
+  } else {
+    const { id, idCard, gender, name, defaultFlag } = patient;
+    editPatient({ id, idCard, gender, name, defaultFlag }).then((res) => {
+      getList();
+      Toast("修改成功");
+      show.value = false;
+      callback();
+    });
+  }
+};
 
 const del = (id: string) => {
   Dialog.confirm({
-    title: '删除患者',
-    message: '您确定是否删除该患者',
+    title: "删除患者",
+    message: "您确定是否删除该患者",
   })
     .then(() => {
-      delPatient(id).then(res => {
-        getList()
-        Toast('删除成功')
-      })
+      delPatient(id).then((res) => {
+        getList();
+        show.value = false;
+        Toast("删除成功");
+      });
     })
     .catch(() => {
       // on cancel
-    })
-}
+    });
+};
 onMounted(() => {
-  getList()
-})
+  getList();
+});
 </script>
 <style scoped lang="scss">
 .patient-page {

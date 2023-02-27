@@ -1,3 +1,9 @@
+/*
+ * @Author: xiewenhao
+ * @Date: 2023-02-23 15:50:37
+ * @LastEditTime: 2023-02-27 13:16:39
+ * @Description: 
+ */
 import { ConsultType } from "@/enums/hospital";
 import type { PartialConsult } from "@/types/consult";
 import { defineStore } from "pinia";
@@ -6,7 +12,7 @@ import { ref } from "vue";
 export const useConsultStor = defineStore(
   "cp-consult",
   () => {
-    const consult = ref<PartialConsult>();
+    const consult = ref<PartialConsult>({});
     // 设置问诊状态
     const setType = (type: ConsultType) => {
       consult.value.type = type;

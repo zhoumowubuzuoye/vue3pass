@@ -1,8 +1,18 @@
 <template>
   <div class="patient-page">
-    <cp-nav-bar :title="'家庭档案'"></cp-nav-bar>
+    <cp-nav-bar :title="isChange ? '选择患者' : '家庭档案'"></cp-nav-bar>
+    <div class="patient-change" v-if="isChange">
+      <h3>请选择患者信息</h3>
+      <p>以便医生给出更准确的治疗，信息仅医生可见</p>
+    </div>
     <div class="patient-list">
-      <div class="patient-item" v-for="item in list" :key="item.id">
+      <div
+        class="patient-item"
+        v-for="item in list"
+        :key="item.id"
+        @click="selectedPatient(item)"
+        :class="{ selected: patientId === item.id }"
+      >
         <div class="info">
           <span class="name">{{ item.name }}</span>
           <span class="id">{{ item.idCard }}</span>
@@ -19,6 +29,9 @@
         <p>添加患者</p>
       </div>
       <div class="patient-tip">最多可添加 6 人</div>
+      <div class="patient-next" v-if="isChange" @click="next">
+        <van-button type="primary" round block>下一步</van-button>
+      </div>
     </div>
     <AddForm
       :popupShow="show"
@@ -32,7 +45,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
+import { useRoute,useRouter } from "vue-router";
+import {useConsultStor} from '@/store'
 import CpNavBar from "@/components/CpNavBar.vue";
 import CpIcon from "@/components/CpIcon.vue";
 import AddForm from "./components/addForm.vue";
@@ -41,17 +56,28 @@ import type { PatientList, Patient } from "@/types/user";
 import { Sex } from "@/utils/tools";
 import { Toast, Dialog } from "vant";
 
+const route = useRoute();
+const router = useRouter()
+const store = useConsultStor()
 const list = ref<PatientList>([]);
 const show = ref(false);
 const form = ref();
+const patientId = ref("");
+
+const isChange = computed(() => {
+  return route.query.isChange === "1";
+});
 const getList = () => {
   getPatientList().then((res) => {
     list.value = res.data;
+    if (isChange.value && list.value.length) {
+      const defalutPatient = list.value.find((item) => item.defaultFlag === 1);
+      if (defalutPatient) patientId.value = defalutPatient.id;
+      else patientId.value = list.value[0].id;
+    }
   });
 };
 const showPopup = (item) => {
-  console.log(item);
-
   if (item) itemValue.value = item;
   show.value = true;
 };
@@ -83,7 +109,11 @@ const submit = (patient: Patient, callback) => {
     });
   }
 };
-
+const next = () => {
+  if (!patientId.value) return Toast("请选就诊择患者");
+  store.setPatient(patientId.value);
+  router.push("/consult/pay");
+};
 const del = (id: string) => {
   Dialog.confirm({
     title: "删除患者",
@@ -99,6 +129,11 @@ const del = (id: string) => {
     .catch(() => {
       // on cancel
     });
+};
+const selectedPatient = (item: Patient) => {
+  if (isChange.value) {
+    patientId.value = item.id;
+  }
 };
 onMounted(() => {
   getList();
@@ -194,5 +229,25 @@ onMounted(() => {
       height: 100%;
     }
   }
+}
+.patient-change {
+  padding: 15px;
+  > h3 {
+    font-weight: normal;
+    margin-bottom: 5px;
+  }
+  > p {
+    color: var(--cp-text3);
+  }
+}
+.patient-next {
+  padding: 15px;
+  background-color: #fff;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 80px;
+  box-sizing: border-box;
 }
 </style>

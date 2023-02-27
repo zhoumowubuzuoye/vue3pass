@@ -83,9 +83,14 @@ export const routes: Array<RouteRecordRaw> = [
     meta: { title: "选择科室" },
   },
   {
-    path: '/consult/illness',
-    component: () => import('@/views/Consult/ConsultIllness.vue'),
-    meta: { title: '病情描述' }
+    path: "/consult/illness",
+    component: () => import("@/views/Consult/ConsultIllness.vue"),
+    meta: { title: "病情描述" },
+  },
+  {
+    path: "/consult/pay",
+    component: () => import("@/views/Consult/ConsultPay.vue"),
+    meta: { title: "问诊支付" },
   },
 ];
 

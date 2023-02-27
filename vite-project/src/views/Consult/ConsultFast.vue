@@ -16,7 +16,7 @@ const store = useConsultStor();
       <router-link
         to="/consult/dep"
         class="item"
-        @click="store.setIllnessType(1)"
+        @click="store?.setIllnessType(1)"
       >
         <cp-icon class="pic" name="consult-doctor"></cp-icon>
         <div class="info">
@@ -28,7 +28,7 @@ const store = useConsultStor();
       <router-link
         to="/consult/dep"
         class="item"
-        @click="store.setIllnessType(0)"
+        @click="store?.setIllnessType(0)"
       >
         <cp-icon class="pic" name="consult-message"></cp-icon>
         <div class="info">

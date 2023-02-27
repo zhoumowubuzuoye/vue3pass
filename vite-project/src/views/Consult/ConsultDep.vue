@@ -1,3 +1,9 @@
+<!--
+ * @Author: xiewenhao
+ * @Date: 2023-02-24 15:00:54
+ * @LastEditTime: 2023-02-27 13:09:53
+ * @Description: 
+-->
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { getAllDep } from "@/api/consult";
@@ -40,7 +46,7 @@ const getDepList = () => {
           to="/consult/illness"
           v-for="item in subDep"
           :key="item?.id"
-          @click="store.setDep(item.id)"
+          @click="store?.setDep(item.id)"
           >{{ item?.name }}</router-link
         >
       </div>

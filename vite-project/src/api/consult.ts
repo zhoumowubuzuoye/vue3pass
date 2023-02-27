@@ -7,6 +7,9 @@ import type {
   DoctorPage,
   FollowType,
   TopDep,
+  Image,
+  ConsultOrderPreData,
+  ConsultOrderPreParams,
 } from "@/types/consult";
 import type { PageParams } from "@/types/page";
 
@@ -20,3 +23,12 @@ export const followOrUnfollow = (id: string, type: FollowType = "doc") =>
   request("/like", "POST", { id, type });
 
 export const getAllDep = () => request<TopDep[]>("/dep/all");
+
+export const uploadImage = (file: File) => {
+  const fd = new FormData();
+  fd.append("file", file);
+  return request<Image>("/upload", "POST", fd);
+};
+
+export const getConsultOrderPre = (params: ConsultOrderPreParams) =>
+  request<ConsultOrderPreData>("/patient/consult/order/pre", "GET", params);

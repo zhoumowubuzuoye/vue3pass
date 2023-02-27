@@ -1,7 +1,7 @@
 /*
  * @Author: xiewenhao
  * @Date: 2023-02-21 15:09:30
- * @LastEditTime: 2023-02-23 15:26:08
+ * @LastEditTime: 2023-02-24 15:34:55
  * @Description:
  */
 import type { pageValue, PageParams } from "./page";
@@ -111,5 +111,18 @@ export type Consult = {
 };
 
 // 问诊记录-全部可选
-export type PartialConsult = Partial<Consult>
+export type PartialConsult = Partial<Consult>;
 // Required 转换为全部必须   Partial 转换问全部可选  两个内置的泛型类型
+
+// 科室
+export type SubDep = {
+  /** 科室ID */
+  id: string;
+  /** 科室姓名 */
+  name: string;
+};
+
+export type TopDep = SubDep & {
+  /** 二级科室 */
+  child: SubDep[];
+};

@@ -1,6 +1,12 @@
 /*
  * @Author: xiewenhao
  * @Date: 2023-02-13 13:33:21
+ * @LastEditTime: 2023-02-24 14:53:29
+ * @Description:
+ */
+/*
+ * @Author: xiewenhao
+ * @Date: 2023-02-13 13:33:21
  * @LastEditTime: 2023-02-16 16:51:33
  * @Description:
  */
@@ -63,6 +69,23 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/user/patient",
     component: () => import("@/views/User/PatientPage.vue"),
     meta: { title: "家庭档案" },
+  },
+  {
+    path: "/consult/fast",
+    component: () => import("@/views/Consult/ConsultFast.vue"),
+    meta: {
+      title: "极速问诊",
+    },
+  },
+  {
+    path: "/consult/dep",
+    component: () => import("@/views/Consult/ConsultDep.vue"),
+    meta: { title: "选择科室" },
+  },
+  {
+    path: '/consult/illness',
+    component: () => import('@/views/Consult/ConsultIllness.vue'),
+    meta: { title: '病情描述' }
   },
 ];
 

@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useConsultStor } from "@/store";
+import { ConsultType } from "@/enums/hospital";
 import CpIcon from "@/components/CpIcon.vue";
 import KnowledgeList from "./components/KnowledgeList.vue";
 import FollowDoctor from "./components/FollowDoctor.vue";
+const store = useConsultStor();
 const active = ref(0);
 </script>
 
@@ -28,7 +31,11 @@ const active = ref(0);
           </router-link>
         </van-col>
         <van-col span="8">
-          <router-link to="/consult/fast" class="nav">
+          <router-link
+            to="/consult/fast"
+            class="nav"
+            @click="store.setType(ConsultType.Fast)"
+          >
             <cp-icon name="home-graphic"></cp-icon>
             <p class="title">极速问诊</p>
             <p class="desc">20s医生极速回复</p>

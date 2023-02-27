@@ -5,9 +5,10 @@ import type {
   Doctor,
   DoctorList,
   DoctorPage,
-  FollowType
+  FollowType,
+  TopDep,
 } from "@/types/consult";
-import type { PageParams  } from "@/types/page";
+import type { PageParams } from "@/types/page";
 
 export const getKnowledgePage = (params: PageParams) =>
   request<KnowledgePage>("/patient/home/knowledge", "GET", params);
@@ -17,3 +18,5 @@ export const getDoctorPage = (params: PageParams) =>
 
 export const followOrUnfollow = (id: string, type: FollowType = "doc") =>
   request("/like", "POST", { id, type });
+
+export const getAllDep = () => request<TopDep[]>("/dep/all");

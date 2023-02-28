@@ -6,11 +6,12 @@ import { getConsultOrderPre } from "@/api/consult";
 import type { ConsultOrderPreData } from "@/types/consult";
 import type { Patient } from "@/types/user";
 import CpNavBar from "@/components/CpNavBar.vue";
-import { log } from "console";
-
+import Pay from "./components/pay.vue";
 const store = useConsultStor();
 const payInfo = ref<ConsultOrderPreData>();
 const agree = ref(false);
+const paymentMethod = ref<0 | 1>();
+const show = ref(false);
 
 onMounted(() => {
   getInfo();
@@ -30,9 +31,14 @@ const getInfo = () => {
 const patient = ref<Patient>();
 const getPatientInfo = () => {
   getPatientDetail(store.consult.patientId).then((res) => {
-    console.log(res);
     patient.value = res.data;
   });
+};
+const submit = () => {
+  show.value = true;
+};
+const update = (value) => {
+  show.value = value;
 };
 </script>
 
@@ -80,7 +86,9 @@ const getPatientInfo = () => {
       :price="payInfo?.payment * 100"
       button-text="立即支付"
       text-align="left"
+      @click="submit"
     />
+    <Pay :payInfo="payInfo" :show="show" @update="update"></Pay>
   </div>
 </template>
 
@@ -147,25 +155,5 @@ const getPatientInfo = () => {
     width: 160px;
   }
 }
-.pay-type {
-  .amount {
-    padding: 20px;
-    text-align: center;
-    font-size: 16px;
-    font-weight: bold;
-  }
-  .btn {
-    padding: 15px;
-  }
-  .van-cell {
-    align-items: center;
-    .cp-icon {
-      margin-right: 10px;
-      font-size: 18px;
-    }
-    .van-checkbox :deep(.van-checkbox__icon) {
-      font-size: 16px;
-    }
-  }
-}
+
 </style>

@@ -10,6 +10,7 @@ import type {
   Image,
   ConsultOrderPreData,
   ConsultOrderPreParams,
+  PartialConsult
 } from "@/types/consult";
 import type { PageParams } from "@/types/page";
 
@@ -32,3 +33,6 @@ export const uploadImage = (file: File) => {
 
 export const getConsultOrderPre = (params: ConsultOrderPreParams) =>
   request<ConsultOrderPreData>("/patient/consult/order/pre", "GET", params);
+
+export const createConsultOrder = (data: PartialConsult) =>
+  request<{ id: string }>("/patient/consult/order", "POST", data);

@@ -7,7 +7,6 @@ import { nameRules, idCardRules } from "@/utils/rules";
 import CpNavBar from "@/components/CpNavBar.vue";
 import CpRadioBtn from "@/components/CpRadioBtn.vue";
 import { FormInstance } from "vant";
-import { log } from "console";
 const initPatient = reactive<Patient>({
   name: "",
   idCard: "",

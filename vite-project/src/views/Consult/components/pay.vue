@@ -1,7 +1,13 @@
+<!--
+ * @Author: xiewenhao
+ * @Date: 2023-02-28 10:31:10
+ * @LastEditTime: 2023-03-01 10:44:26
+ * @Description: 
+-->
 <template>
   <van-action-sheet
     :show="show"
-    title="请选择支付方式"
+    title="请选择支付方式1"
     @update:show="updateShow($event)"
   >
     <div class="pay-type">

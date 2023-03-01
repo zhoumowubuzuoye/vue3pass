@@ -28,4 +28,7 @@ export const delPatient = (id: string) =>
 export const editPatient = (patient: Patient) =>
   request("/patient/update", "PUT", patient);
 
-  export const getPatientDetail = (id: string) => request<Patient>(`/patient/info/${id}`)
+export const getPatientDetail = (id: string) =>
+  request<Patient>(`/patient/info/${id}`);
+
+

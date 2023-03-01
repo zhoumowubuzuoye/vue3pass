@@ -1,13 +1,7 @@
 /*
  * @Author: xiewenhao
  * @Date: 2023-02-13 13:33:21
- * @LastEditTime: 2023-02-24 14:53:29
- * @Description:
- */
-/*
- * @Author: xiewenhao
- * @Date: 2023-02-13 13:33:21
- * @LastEditTime: 2023-02-16 16:51:33
+ * @LastEditTime: 2023-03-01 16:23:42
  * @Description:
  */
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
@@ -91,6 +85,14 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/consult/pay",
     component: () => import("@/views/Consult/ConsultPay.vue"),
     meta: { title: "问诊支付" },
+  },
+  {
+    path: '/room',
+    component: () => import('@/views/Room/index.vue'),
+    meta: { title: '问诊室' },
+    beforeEnter(to) {
+      if (to.query.payResult === 'false') return '/home'
+    }
   },
 ];
 

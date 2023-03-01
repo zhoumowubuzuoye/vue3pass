@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useConsultStor } from "@/store";
+import { useRouter } from "vue-router";
 import { getPatientDetail } from "@/api";
-import { getConsultOrderPre } from "@/api/consult";
+import { getConsultOrderPre, createConsultOrder } from "@/api/consult";
 import type { ConsultOrderPreData } from "@/types/consult";
 import type { Patient } from "@/types/user";
+
+import { Toast, Dialog } from "vant";
 import CpNavBar from "@/components/CpNavBar.vue";
 import Pay from "./components/pay.vue";
 const store = useConsultStor();
+const router = useRouter();
 const payInfo = ref<ConsultOrderPreData>();
 const agree = ref(false);
 const paymentMethod = ref<0 | 1>();
 const show = ref(false);
-
+const loading = ref(false);
+const orderId = ref("");
 onMounted(() => {
   getInfo();
   getPatientInfo();
@@ -36,9 +41,31 @@ const getPatientInfo = () => {
 };
 const submit = () => {
   show.value = true;
+  loading.value = true;
+  createConsultOrder(store.consult).then((res) => {
+    orderId.value = res.data.id;
+    loading.value = false;
+    store.clear();
+  });
 };
 const update = (value) => {
   show.value = value;
+};
+
+const close = () => {
+  Dialog.confirm({
+    title: "支付?",
+    message: "取消支付将无法获得医生回复，医生接诊名额有限，是否确认关闭？",
+    cancelButtonText: "仍要关闭",
+    confirmButtonText: "继续支付",
+  })
+    .then(() => {
+      return false;
+    })
+    .catch(() => {
+      router.push("/home");
+      return true;
+    });
 };
 </script>
 
@@ -87,8 +114,15 @@ const update = (value) => {
       button-text="立即支付"
       text-align="left"
       @click="submit"
+      :loading="loading"
     />
-    <Pay :payInfo="payInfo" :show="show" @update="update"></Pay>
+    <Pay
+      :payInfo="payInfo"
+      :show="show"
+      @update="update"
+      :close="close"
+      :orderId="orderId"
+    ></Pay>
   </div>
 </template>
 
@@ -155,5 +189,4 @@ const update = (value) => {
     width: 160px;
   }
 }
-
 </style>

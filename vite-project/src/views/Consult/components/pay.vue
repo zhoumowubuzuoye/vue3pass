@@ -1,8 +1,17 @@
+<!--
+ * @Author: xiewenhao
+ * @Date: 2023-02-28 10:31:10
+ * @LastEditTime: 2023-03-01 16:14:53
+ * @Description: 
+-->
 <template>
   <van-action-sheet
     :show="show"
-    title="请选择支付方式aa"
+    title="请选择支付方式"
     @update:show="updateShow($event)"
+    :close-on-popstate="false"
+    :before-close="close"
+    :closeable="false"
   >
     <div class="pay-type">
       <p class="amount">￥{{ payInfo.actualPayment.toFixed(2) }}</p>
@@ -30,21 +39,25 @@
 </template>
 <script lang="ts" setup>
 import type { ConsultOrderPreData } from "@/types/consult";
-import { createConsultOrder } from "@/api/consult";
+import { getConsultOrderPayUrl } from "@/api/consult";
 import { useConsultStor } from "@/store";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { isNumber } from "lodash";
+import { Toast, Dialog } from "vant";
 import CpIcon from "@/components/CpIcon.vue";
 
-import { ref } from "vue";
-import { isNumber } from "lodash";
-import { Toast } from "vant";
 const props = defineProps<{
   show: boolean;
   payInfo: ConsultOrderPreData;
+  close: () => void;
+  orderId: string;
 }>();
 const emit = defineEmits<{
   (update, value: boolean): void;
 }>();
 const store = useConsultStor();
+const router = useRouter();
 const loading = ref(false);
 const paymentMethod = ref<0 | 1>();
 const orderId = ref("");
@@ -52,14 +65,17 @@ const orderId = ref("");
 const updateShow = (e) => {
   emit("update", e);
 };
+
 const submit = () => {
   if (!isNumber(paymentMethod.value)) return Toast("请选择支付方式");
-  loading.value = true;
-  createConsultOrder(store.consult).then((res) => {
-    orderId.value = res.data.id;
-    loading.value = false;
-    store.clear();
-    emit("update", false);
+  getConsultOrderPayUrl({
+    paymentMethod: paymentMethod.value,
+    orderId: props.orderId,
+    payCallback: "http://localhost:5173/room",
+  }).then((res) => {
+    console.log(res.data.payUrl);
+    // window.location.href = res.data.payUrl
+    router.push("/room");
   });
 };
 </script>

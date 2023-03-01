@@ -44,7 +44,7 @@ const update = (value) => {
 
 <template>
   <div class="consult-pay-page">
-    <cp-nav-bar title="支付" />
+    <cp-nav-bar title="支付11" />
     <div class="pay-info">
       <p class="tit">图文问诊 {{ payInfo?.payment }} 元</p>
       <img class="img" src="@/assets/avatar-doctor.svg" />

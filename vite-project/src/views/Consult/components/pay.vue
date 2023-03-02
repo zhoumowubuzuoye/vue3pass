@@ -1,7 +1,7 @@
 <!--
  * @Author: xiewenhao
  * @Date: 2023-02-28 10:31:10
- * @LastEditTime: 2023-03-01 16:14:53
+ * @LastEditTime: 2023-03-02 13:24:45
  * @Description: 
 -->
 <template>
@@ -75,7 +75,12 @@ const submit = () => {
   }).then((res) => {
     console.log(res.data.payUrl);
     // window.location.href = res.data.payUrl
-    router.push("/room");
+    router.push({
+      path:"/room",
+      query:{
+        orderId:props.orderId
+      }
+    });
   });
 };
 </script>

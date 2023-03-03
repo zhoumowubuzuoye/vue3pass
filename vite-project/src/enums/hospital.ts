@@ -1,3 +1,9 @@
+/*
+ * @Author: xiewenhao
+ * @Date: 2023-02-23 15:38:04
+ * @LastEditTime: 2023-03-03 15:47:28
+ * @Description: 
+ */
 export enum ConsultType {
   /** 找医生 */
   Doctor = 1,
@@ -48,4 +54,29 @@ export enum PrescriptionStatus {
   Payment = 2,
   // 已失效
   Invalid = 3,
+}
+
+export enum OrderType {
+  // 问诊订单
+  /** 待支付 */
+  ConsultPay = 1,
+  /** 带接诊 */
+  ConsultWait ,
+  /** 问诊中 */
+  ConsultChat ,
+  /** 问诊完成 */
+  ConsultComplete ,
+  /** 取消问诊 */
+  ConsultCancel ,
+  // 药品订单
+  /** 待支付 */
+  MedicinePay = 10,
+  /** 待发货 */
+  MedicineSend ,
+  /** 待收货 */
+  MedicineTake ,
+  /** 已完成 */
+  MedicineComplete,
+  /** 取消订单 */
+  MedicineCancel 
 }

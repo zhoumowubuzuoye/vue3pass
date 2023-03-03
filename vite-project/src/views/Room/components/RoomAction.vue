@@ -1,5 +1,23 @@
+<!--
+ * @Author: xiewenhao
+ * @Date: 2023-03-01 17:30:19
+ * @LastEditTime: 2023-03-03 16:27:45
+ * @Description: 
+-->
 <script setup lang="ts">
-import CpIcon from '@/components/CpIcon.vue';
+import { ref } from "vue";
+import CpIcon from "@/components/CpIcon.vue";
+const props = defineProps<{
+  disabled: boolean;
+}>();
+const emit = defineEmits<{
+  (e: "send_text", value: string): void;
+}>();
+const text = ref("");
+const sendText = () => {
+  emit("send_text", text.value);
+  text.value = "";
+};
 </script>
 
 <template>
@@ -10,8 +28,10 @@ import CpIcon from '@/components/CpIcon.vue';
       :border="false"
       placeholder="问医生"
       autocomplete="off"
+      v-model="text"
+      @keyup.enter="sendText"
     ></van-field>
-    <van-uploader :preview-image="false">
+    <van-uploader :preview-image="false" :disabled="disabled">
       <cp-icon name="consult-img" />
     </van-uploader>
   </div>

@@ -2,25 +2,14 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useConsultStor } from "@/store";
-import { IllnessTime } from "@/enums/hospital";
 import type { ConsultIllness, Image } from "@/types/consult";
 import { uploadImage } from "@/api/consult";
+import { timeOptions, flagOptions } from "@/utils/consult";
 
 import { Dialog } from "vant";
 import CpNavBar from "@/components/CpNavBar.vue";
 import CpIcon from "@/components/CpIcon.vue";
 import CpRadioBtn from "@/components/CpRadioBtn.vue";
-const timeOptions = [
-  { label: "一周内", value: IllnessTime.Week },
-  { label: "一月内", value: IllnessTime.Month },
-  { label: "半年内", value: IllnessTime.HalfYear },
-  { label: "大于半年", value: IllnessTime.More },
-];
-
-const flagOptions = [
-  { label: "就诊过", value: 0 },
-  { label: "没就诊过", value: 1 },
-];
 
 const router = useRouter();
 const store = useConsultStor();
@@ -29,7 +18,7 @@ onMounted(() => {
     Dialog.confirm({
       title: "提示",
       message: "是否恢复您之前填写的病情信息呢？",
-      confirmButtonColor: 'var(--cp-primary)',
+      confirmButtonColor: "var(--cp-primary)",
       closeOnPopstate: false,
     })
       .then(() => {

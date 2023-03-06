@@ -1,16 +1,29 @@
 <script setup lang="ts">
+import { getCurrentInstance } from "vue";
+import { useRouter } from "vue-router";
+import { PrescriptionStatus } from "@/enums/hospital";
 import { IllnessTime, MsgType } from "@/enums/hospital";
 import { timeOptions, flagOptions } from "@/utils/consult";
 import type { Message, TimeMessages } from "@/types/room";
+import { ImagePreview, Toast } from "vant";
 import type { Image } from "@/types/consult";
+import { useUserStore } from "@/store";
+import { getPrescriptionPic } from "@/api/consult";
+import doctorAvatar from "@/assets/avatar-doctor.svg";
+import EvaluateCard from "./evaluateCard.vue";
 
+const store = useUserStore();
+const router = useRouter();
+const { proxy }: any = getCurrentInstance();
+const $Dayjs = proxy.$Dayjs;
 
-import { ImagePreview } from "vant";
+const formatTime = (time: string) => $Dayjs(time).format("HH:mm");
+
 const props = defineProps<{
   list: Message[];
 }>();
 
-const getIllnessTimeText = (time: IllnessTime) => {
+const getIllnessTimeText = (time: IllnessTime | undefined) => {
   return timeOptions.find((item) => item.value === time)?.label;
 };
 const getConsultFlagText = (flag: 0 | 1) => {
@@ -18,6 +31,21 @@ const getConsultFlagText = (flag: 0 | 1) => {
 };
 const review = (pictures?: Image[]) => {
   ImagePreview(pictures.map((item) => item.url));
+};
+const buy = (pre) => {
+  if (pre) {
+    if (pre.status === PrescriptionStatus.Invalid) return Toast("处方已失效");
+    if (pre.status === PrescriptionStatus.NotPayment && !pre.orderId)
+      return router.push(`/order/pay?id=${pre.id}`);
+    router.push(`/order/${pre.orderId}`);
+  }
+};
+const showPrescription = (id?: string) => {
+  if (id) {
+    getPrescriptionPic(id).then((res) => {
+      ImagePreview([res.data.url]);
+    });
+  }
 };
 </script>
 
@@ -31,8 +59,8 @@ const review = (pictures?: Image[]) => {
           {{ item.msg.consultRecord?.patientInfo.age }}岁
         </p>
         <p>
-          {{ getIllnessTimeText(item.msg.consultRecord?.illnessTime) }} |
-          {{ getConsultFlagText(item.msg.consultRecord?.consultFlag) }}
+          {{ getIllnessTimeText(item.msg.consultRecord.illnessTime) }} |
+          {{ getConsultFlagText(item.msg.consultRecord.consultFlag) }}
         </p>
       </div>
       <van-row>
@@ -58,36 +86,47 @@ const review = (pictures?: Image[]) => {
       </div>
     </div>
 
-    <div class="msg msg-to">
+    <div
+      class="msg msg-to"
+      v-if="
+        (item.msgType === MsgType.MsgText ||
+          item.msgType === MsgType.MsgImage) &&
+        store.user?.id === item.from
+      "
+    >
       <div class="content">
-        <div class="time">20:12</div>
-        <div class="pao">大夫你好？</div>
-      </div>
-      <van-image
-        src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg"
-      />
-    </div>
-
-    <div class="msg msg-to">
-      <div class="content">
-        <div class="time">20:12</div>
+        <div class="time">{{ formatTime(item.createTime) }}</div>
+        <div class="pao" v-if="item.msgType === MsgType.MsgText">
+          {{ item.msg.content }}
+        </div>
         <van-image
+          v-else-if="item.msgType === MsgType.MsgImage"
           fit="contain"
-          src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg"
+          :src="item.msg.picture?.url"
         />
       </div>
-      <van-image
-        src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg"
-      />
+      <van-image :src="store.user?.avatar" />
     </div>
 
-    <div class="msg msg-from">
-      <van-image
-        src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg"
-      />
+    <div
+      class="msg msg-from"
+      v-if="
+        (item.msgType === MsgType.MsgText ||
+          item.msgType === MsgType.MsgImage) &&
+        store.user?.id !== item.from
+      "
+    >
+      <van-image :src="doctorAvatar" />
       <div class="content">
-        <div class="time">20:12</div>
-        <div class="pao">哪里不舒服</div>
+        <div class="time">{{ formatTime(item.createTime) }}</div>
+        <div class="pao" v-if="item.msgType === MsgType.MsgText">
+          {{ item.msg.content }}
+        </div>
+        <van-image
+          v-else-if="item.msgType === MsgType.MsgImage"
+          fit="contain"
+          :src="item.msg.picture?.url"
+        />
       </div>
     </div>
 
@@ -96,24 +135,44 @@ const review = (pictures?: Image[]) => {
         <div class="head van-hairline--bottom">
           <div class="head-tit">
             <h3>电子处方</h3>
-            <p>原始处方 <van-icon name="arrow"></van-icon></p>
+            <p @click="showPrescription(item.msg.prescription?.id)">
+              原始处方 <van-icon name="arrow"></van-icon>
+            </p>
           </div>
-          <p>李富贵 男 31岁 血管性头痛</p>
-          <p>开方时间：2022-01-15 14:21:42</p>
+          <p>
+            {{ item.msg.prescription?.name }}
+            {{ item.msg.prescription?.genderValue }}
+            {{ item.msg.prescription?.age }}岁
+            {{ item.msg.prescription?.diagnosis }}
+          </p>
+          <p>开方时间：{{ item.msg.prescription?.createTime }}</p>
         </div>
         <div class="body">
-          <div class="body-item" v-for="i in 2" :key="i">
+          <div
+            class="body-item"
+            v-for="med in item.msg.prescription?.medicines"
+            :key="med.id"
+          >
             <div class="durg">
-              <p>优赛明 维生素E乳</p>
-              <p>口服，每次1袋，每天3次，用药3天</p>
+              <p>{{ med.name }} {{ med.specs }}</p>
+              <p>{{ med.usageDosag }}</p>
             </div>
-            <div class="num">x1</div>
+            <div class="num">x{{ med.quantity }}</div>
           </div>
         </div>
-        <div class="foot"><span>购买药品</span></div>
+        <div class="foot">
+          <span @click="buy(item.msg.prescription)">购买药品</span>
+        </div>
       </div>
     </div>
-
+    <div
+      class="msg msg-comment"
+      v-if="
+        item.msgType === MsgType.CardEva || item.msgType === MsgType.CardEvaForm
+      "
+    >
+      <EvaluateCard :evaluateDoc="item.msg.evaluateDoc"></EvaluateCard>
+    </div>
     <div class="msg msg-tip msg-tip-cancel">
       <div class="content">
         <span>订单取消</span>

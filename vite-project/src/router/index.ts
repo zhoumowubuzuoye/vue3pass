@@ -94,6 +94,11 @@ export const routes: Array<RouteRecordRaw> = [
       if (to.query.payResult === 'false') return '/home'
     }
   },
+  {
+    path: '/user/consult',
+    component: () => import('@/views/User/ConsultPage.vue'),
+    meta: { title: '问诊记录' }
+  }
 ];
 
 const router = createRouter({

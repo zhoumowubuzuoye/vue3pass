@@ -1,3 +1,9 @@
+/*
+ * @Author: xiewenhao
+ * @Date: 2023-02-21 15:29:15
+ * @LastEditTime: 2023-03-06 16:39:04
+ * @Description: 
+ */
 import { request } from "@/utils/request";
 import type {
   KnowledgePage,
@@ -11,8 +17,11 @@ import type {
   ConsultOrderPreData,
   ConsultOrderPreParams,
   PartialConsult,
-  ConsultOrderItem
+  ConsultOrderItem,
+  ConsultOrderListParams,
+  ConsultOrderPage,
 } from "@/types/consult";
+
 import type { PageParams } from "@/types/page";
 
 export const getKnowledgePage = (params: PageParams) =>
@@ -38,14 +47,19 @@ export const getConsultOrderPre = (params: ConsultOrderPreParams) =>
 export const createConsultOrder = (data: PartialConsult) =>
   request<{ id: string }>("/patient/consult/order", "POST", data);
 
-  export const getConsultOrderPayUrl = (params: {
-    paymentMethod: 0 | 1;
-    orderId: string;
-    payCallback: string;
-  }) => request<{ payUrl: string }>("/patient/consult/pay", "POST", params);
+export const getConsultOrderPayUrl = (params: {
+  paymentMethod: 0 | 1;
+  orderId: string;
+  payCallback: string;
+}) => request<{ payUrl: string }>("/patient/consult/pay", "POST", params);
 
-  export const getConsultOrderDetail = (orderId: string) =>
-  request<ConsultOrderItem>('/patient/consult/order/detail', 'GET', { orderId })
+export const getConsultOrderDetail = (orderId: string) =>
+  request<ConsultOrderItem>("/patient/consult/order/detail", "GET", {
+    orderId,
+  });
 
-  export const getPrescriptionPic = (id: string) =>
-  request<{ url: string }>(`/patient/consult/prescription/${id}`)
+export const getPrescriptionPic = (id: string) =>
+  request<{ url: string }>(`/patient/consult/prescription/${id}`);
+
+export const getConsultOrderList = (params: ConsultOrderListParams) =>
+  request<ConsultOrderPage>("/patient/consult/order/list", "GET", params);

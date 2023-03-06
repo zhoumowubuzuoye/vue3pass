@@ -1,6 +1,14 @@
+<!--
+ * @Author: xiewenhao
+ * @Date: 2023-03-06 16:36:15
+ * @LastEditTime: 2023-03-06 16:45:15
+ * @Description: 
+-->
 <script setup lang="ts">
 import ConsultList from './components/ConsultList.vue'
 import { ConsultType } from '@/enums/hospital'
+
+import CpNavBar from '@/components/CpNavBar.vue';
 </script>
 
 <template>

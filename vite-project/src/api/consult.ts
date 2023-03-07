@@ -1,8 +1,8 @@
 /*
  * @Author: xiewenhao
  * @Date: 2023-02-21 15:29:15
- * @LastEditTime: 2023-03-06 16:39:04
- * @Description: 
+ * @LastEditTime: 2023-03-07 09:31:47
+ * @Description:
  */
 import { request } from "@/utils/request";
 import type {
@@ -63,3 +63,10 @@ export const getPrescriptionPic = (id: string) =>
 
 export const getConsultOrderList = (params: ConsultOrderListParams) =>
   request<ConsultOrderPage>("/patient/consult/order/list", "GET", params);
+
+// 取消订单
+export const cancelOrder = (id: string) =>
+  request(`/patient/order/cancel/${id}`, "PUT");
+
+// 删除订单
+export const deleteOrder = (id: string) => request(`/patient/order/${id}`, 'DELETE')

@@ -1,7 +1,7 @@
 <!--
  * @Author: xiewenhao
  * @Date: 2023-03-06 16:36:15
- * @LastEditTime: 2023-03-06 17:13:00
+ * @LastEditTime: 2023-03-07 10:21:27
  * @Description: 
 -->
 <script setup lang="ts">
@@ -30,8 +30,11 @@ const onLoad = () => {
     } else {
       finished.value = true;
     }
-    loading.value = false
+    loading.value = false;
   });
+};
+const deleteItem = (id: string) => {
+  list.value = list.value.filter((itemValue) => itemValue.id !== id);
 };
 </script>
 
@@ -47,6 +50,7 @@ const onLoad = () => {
         v-for="item in list"
         :key="item.id"
         :item="item"
+        @delete_item="deleteItem"
       ></ConsultItem>
     </van-list>
   </div>

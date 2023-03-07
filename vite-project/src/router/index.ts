@@ -87,18 +87,23 @@ export const routes: Array<RouteRecordRaw> = [
     meta: { title: "问诊支付" },
   },
   {
-    path: '/room',
-    component: () => import('@/views/Room/index.vue'),
-    meta: { title: '问诊室' },
+    path: "/room",
+    component: () => import("@/views/Room/index.vue"),
+    meta: { title: "问诊室" },
     beforeEnter(to) {
-      if (to.query.payResult === 'false') return '/home'
-    }
+      if (to.query.payResult === "false") return "/home";
+    },
   },
   {
-    path: '/user/consult',
-    component: () => import('@/views/User/ConsultPage.vue'),
-    meta: { title: '问诊记录' }
-  }
+    path: "/user/consult",
+    component: () => import("@/views/User/ConsultPage.vue"),
+    meta: { title: "问诊记录" },
+  },
+  {
+    path: "/user/consult/:id",
+    component: () => import("@/views/User/ConsultDetail.vue"),
+    meta: { title: "问诊详情" },
+  },
 ];
 
 const router = createRouter({

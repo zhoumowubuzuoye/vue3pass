@@ -1,17 +1,48 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { cancelOrder, deleteOrder } from "@/api/consult";
 import type { ConsultOrderItem } from "@/types/consult";
 import { OrderType } from "@/enums/hospital";
+import { Toast } from "vant";
+import { useShowPrescrition, useCancelOrder } from "@/composable/consult";
+import CpConsultMore from "@/components/CpConsultMore.vue";
 const props = defineProps<{
   item: ConsultOrderItem;
 }>();
+const emit = defineEmits<{
+  (e: "delete_item", id: string): void;
+}>();
+const { showPrescription } = useShowPrescrition();
 const showPopover = ref(false);
 const actions = computed(() => [
   { text: "查看处方", disabled: !props.item.prescriptionId },
   { text: "删除订单" },
 ]);
-const onSelect = () => {
+const onSelect = (actions, index: number) => {
   //
+  if (index === 0) {
+    showPrescription(props.item.prescriptionId);
+  }
+  if (index === 1) {
+    deleteItem(props.item);
+  }
+};
+const { loading, cancelConsultOrder } = useCancelOrder();
+
+const deleteLoading = ref(false);
+const deleteItem = (item: ConsultOrderItem) => {
+  deleteLoading.value = true;
+  deleteOrder(item.id)
+    .then((res) => {
+      emit("delete_item", item.id);
+      Toast.success("删除成功");
+    })
+    .catch(() => {
+      Toast.fail("删除失败");
+    })
+    .finally(() => {
+      deleteLoading.value = false;
+    });
 };
 </script>
 
@@ -35,7 +66,7 @@ const onSelect = () => {
       </div>
       <div class="body-row">
         <div class="body-label">价格</div>
-        <div class="body-value">¥ {{ item.actualPayment.toFixed(2) }}</div>
+        <div class="body-value">¥ {{ item?.payment.toFixed(2) }}</div>
       </div>
       <div class="body-row">
         <div class="body-label">创建时间</div>
@@ -43,7 +74,15 @@ const onSelect = () => {
       </div>
     </div>
     <div class="foot" v-if="item.status === OrderType.ConsultPay">
-      <van-button class="gray" plain size="small" round>取消问诊</van-button>
+      <van-button
+        class="gray"
+        :loading="loading"
+        plain
+        size="small"
+        round
+        @click="cancelConsultOrder(item)"
+        >取消问诊</van-button
+      >
       <van-button
         type="primary"
         plain
@@ -55,7 +94,15 @@ const onSelect = () => {
       </van-button>
     </div>
     <div class="foot" v-if="item.status === OrderType.ConsultWait">
-      <van-button class="gray" plain size="small" round>取消问诊</van-button>
+      <van-button
+        class="gray"
+        :loading="loading"
+        plain
+        size="small"
+        @click="cancelConsultOrder(item)"
+        round
+        >取消问诊</van-button
+      >
       <van-button
         type="primary"
         plain
@@ -87,16 +134,11 @@ const onSelect = () => {
       </van-button>
     </div>
     <div class="foot" v-if="item.status === OrderType.ConsultComplete">
-      <div class="more">
-        <van-popover
-          placement="top-start"
-          v-model:show="showPopover"
-          :actions="actions"
-          @select="onSelect"
-        >
-          <template #reference> 更多 </template>
-        </van-popover>
-      </div>
+      <CpConsultMore
+        :disabled="!props.item.prescriptionId"
+        @on-delete="deleteItem(item)"
+        @on-preview="showPrescription(item.prescriptionId)"
+      ></CpConsultMore>
       <van-button
         class="gray"
         plain
@@ -120,7 +162,15 @@ const onSelect = () => {
       </van-button>
     </div>
     <div class="foot" v-if="item.status === OrderType.ConsultCancel">
-      <van-button class="gray" plain size="small" round>删除订单</van-button>
+      <van-button
+        class="gray"
+        plain
+        size="small"
+        round
+        @click="deleteItem(item)"
+        :loading="deleteLoading"
+        >删除订单</van-button
+      >
       <van-button type="primary" plain size="small" round to="/"
         >咨询其他医生</van-button
       >

@@ -4,7 +4,11 @@ import { cancelOrder, deleteOrder } from "@/api/consult";
 import type { ConsultOrderItem } from "@/types/consult";
 import { OrderType } from "@/enums/hospital";
 import { Toast } from "vant";
-import { useShowPrescrition, useCancelOrder } from "@/composable/consult";
+import {
+  useShowPrescrition,
+  useCancelOrder,
+  useDeleteOrder,
+} from "@/composable/consult";
 import CpConsultMore from "@/components/CpConsultMore.vue";
 const props = defineProps<{
   item: ConsultOrderItem;
@@ -24,26 +28,14 @@ const onSelect = (actions, index: number) => {
     showPrescription(props.item.prescriptionId);
   }
   if (index === 1) {
-    deleteItem(props.item);
+    deleteConsultOrder(props.item);
   }
 };
 const { loading, cancelConsultOrder } = useCancelOrder();
 
-const deleteLoading = ref(false);
-const deleteItem = (item: ConsultOrderItem) => {
-  deleteLoading.value = true;
-  deleteOrder(item.id)
-    .then((res) => {
-      emit("delete_item", item.id);
-      Toast.success("删除成功");
-    })
-    .catch(() => {
-      Toast.fail("删除失败");
-    })
-    .finally(() => {
-      deleteLoading.value = false;
-    });
-};
+const { deleteLoading, deleteConsultOrder } = useDeleteOrder(() => {
+  emit("delete_item", props.item.id);
+});
 </script>
 
 <template>
@@ -136,7 +128,7 @@ const deleteItem = (item: ConsultOrderItem) => {
     <div class="foot" v-if="item.status === OrderType.ConsultComplete">
       <CpConsultMore
         :disabled="!props.item.prescriptionId"
-        @on-delete="deleteItem(item)"
+        @on-delete="deleteConsultOrder(item)"
         @on-preview="showPrescription(item.prescriptionId)"
       ></CpConsultMore>
       <van-button
@@ -167,7 +159,7 @@ const deleteItem = (item: ConsultOrderItem) => {
         plain
         size="small"
         round
-        @click="deleteItem(item)"
+        @click="deleteConsultOrder(item)"
         :loading="deleteLoading"
         >删除订单</van-button
       >
